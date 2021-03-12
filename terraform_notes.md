@@ -1,4 +1,6 @@
+# Terraform Notes
 
+## Resource
 general resource syntax
 ```
 resource "<PROVIDER>_<TYPE>" "<NAME>" {
@@ -39,3 +41,45 @@ variable "number_example" {
   default     = 42
 }
 ```
+## Data source
+A data source is read-only information that is fetched from the provider.
+It queries the provider api for data, then makes the data available to the rest of the Terraform code.
+```
+data "<PROVIDER>_<TYPE>" "<NAME>" {
+  [CONFIG] ...
+}
+```
+
+## State
+Terraform records the information about all the infrastructure it created in a Terraform state file - terraform.state.
+_Remote backends_ is the best way to manage shared-storage of state files.
+
+### Backend
+To change where Terraform will store the state file, configuration is made to Terraform itself within the terraformblock.
+```
+terraform {
+  backend "<BACKEND_NAME>" {
+    [CONFIG ...]
+  }
+}
+```
+
+## Workspaces
+Terraform workspaces storage of Terraform state in multiple, seperate, names workspaces.
+The default workspace is "default".
+
+In the backend storage, an "env" folder is created containing a folder for each workspace. Inside that folder is the state file (terraform.tfstate) named '<workspace-name>/<key-specified-backend-configuration/terraform.tfstate'
+
+Workspaces are best used for experiemnts (eg refactoring code) but dont want to affect the state of already deployed infrastructure.
+
+To identify which workspace you are in
+```terraform workspace show```
+
+to create a workspace:
+`terraform workspace new <workspace-name>`
+
+to see all the workspaces:
+`terraform workspace list`
+
+to switch between workspaces:
+`terraform workspace select <workspace-name>`
