@@ -83,3 +83,33 @@ to see all the workspaces:
 
 to switch between workspaces:
 `terraform workspace select <workspace-name>`
+
+
+## terraform_remote_state
+This data source is used to fetch the Terraform state file stored by another set of Terraform configurations in a read-only manner.
+```
+data "terraform_remote_state" "db" {
+  backend = "s3"
+
+  config = {
+    bucket = ""
+    key    = ""
+    region = ""
+  }
+}
+```
+all the output variables are stored in the state file and can be read using attribute reference:
+`data.terraform_remote_state.<NAME>.outputs.<ATTRIBUTE>`
+
+
+__!note__<br>
+all passwords are stored in Terraform state! it's a known weakness, and therefore state files should be saved in secure location.
+
+## Secrets
+passwords should never be stored in plain text, and therefore should be stored in secret stores like AWS Secret Manager, AWS KMS, etc
+The alternative is to manage the passwords outside of Terraform and passing the secret via environment variable
+```
+# password = var.db_password
+# note the space before export, prevent password stored in Bash history
+ export TF_VAR_db_password="<db_password_here>"
+```
